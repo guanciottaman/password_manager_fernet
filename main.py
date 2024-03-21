@@ -50,7 +50,7 @@ def insert_password(_=None):
     website = website_entry.get()
     username = username_entry.get()
     password = password_entry.get()
-    if any(i is None for i in (website, username, password)):
+    if any(not i for i in (website, username, password)):
         return
     conn = sqlite3.connect('database.sqlite3')
     cursor = conn.cursor()
@@ -95,14 +95,14 @@ def load_password_ui(website: str, username: str, password: str, i:int):
             website_label.grid_forget(),
             username_label.grid_forget(),
             password_label.grid_forget(),
-            edit_website_entry.grid(row=0, column=0, padx=15, pady=10, sticky='nsew'),
             edit_website_entry.insert(0, website),
             edit_username_entry.insert(0, username),
             edit_password_entry.insert(0, password),
+            edit_website_entry.grid(row=0, column=0, padx=15, pady=10, sticky='nsew'),
             edit_username_entry.grid(row=0, column=1, padx=15, pady=10, sticky='nsew'),
             edit_password_entry.grid(row=0, column=2, padx=15, pady=10, sticky='nsew'),
             submit_edits_btn.grid(row=0, column=5, padx=5, pady=10, sticky='nsew'),
-            root.unbind('<Button-3>')
+            root.unbind('<Return>')
             ])
     edit_password_btn.grid(row=0, column=3, padx=15, pady=10)
     delete_password_btn = CTkButton(entry_frame, text='Delete', fg_color='red', width=50, height=20,
@@ -149,7 +149,6 @@ def load_passwords():
 def edit_password(website: str, username: str, password: str,
                 old_website: str, old_username: str, *widgets):
     """Edit password from the database"""
-    print(website, username, password)
     fernet = Fernet(current_key)
     conn = sqlite3.connect('database.sqlite3')
     cursor = conn.cursor()
@@ -162,7 +161,7 @@ def edit_password(website: str, username: str, password: str,
     for widget in widgets:
         widget.grid_forget()
     load_passwords()
-    root.bind('<Button-3>', insert_password)
+    root.bind('<Return>', insert_password)
 
 def delete_password(website: str, username: str):
     """Delete a password from the database"""
