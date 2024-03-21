@@ -107,7 +107,7 @@ def load_password_ui(website: str, username: str, password: str, i:int):
     edit_password_btn.grid(row=0, column=3, padx=15, pady=10)
     delete_password_btn = CTkButton(entry_frame, text='Delete', fg_color='red', width=50, height=20,
             font=('Segoe UI', 15, 'bold'),
-            command=lambda: [delete_password(website, username, password), entry_frame.destroy()])
+            command=lambda: [delete_password(website, username), entry_frame.destroy()])
     delete_password_btn.grid(row=1, column=3, padx=15, pady=10)
     entry_frame.grid(row=i, column=0, padx=15, pady=15, sticky='new')
 
@@ -164,13 +164,12 @@ def edit_password(website: str, username: str, password: str,
     load_passwords()
     root.bind('<Button-3>', insert_password)
 
-def delete_password(website: str, username: str, password: str):
+def delete_password(website: str, username: str):
     """Delete a password from the database"""
-    fernet = Fernet(current_key)
     conn = sqlite3.connect('database.sqlite3')
     cursor = conn.cursor()
-    cursor.execute('DELETE FROM passwords WHERE website = ? AND username = ? AND password = ?',
-            (website, username, fernet.encrypt(password.encode('utf-8'))))
+    cursor.execute('DELETE FROM passwords WHERE website = ? AND username = ?',
+            (website, username))
     conn.commit()
     conn.close()
     load_passwords()
